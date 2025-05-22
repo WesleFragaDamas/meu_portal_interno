@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Planejar Escalas - {{ cenario.nome_cenario }}{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .escala-table { font-size: 0.85em; }
+        .escala-table th, .escala-table td { text-align: center; white-space: nowrap; }
+        .saldo-negativo { color: red; font-weight: bold; }
+        .saldo-positivo { color: green; }
+        .formset-alocacao-row { display: flex; gap: 10px; align-items: flex-end; padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 10px; }
+        .formset-alocacao-row .form-group { margin-bottom: 0; }
+        .formset-alocacao-row > div { flex-grow: 1; }
+        .formset-alocacao-row .delete-form-col { flex-grow: 0; flex-basis: 50px; }
+        .summary-metrics { margin-bottom: 20px; padding: 15px; background-color: #e9ecef; border-radius: 5px; }
+        .summary-metrics p { margin-bottom: 5px; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>Planejamento de Escalas para o Cenário: {{ cenario.nome_cenario }}</h2>
+    <p><strong>Data de Referência:</strong> {{ cenario.data_referencia|date:"d/m/Y" }}</p>
+    <p>
+        <a href="{% url 'dimensionamento:editar_cenario' pk=cenario.pk %}" class="btn btn-sm btn-outline-secondary">Voltar para Edição do Cenário</a>
+        <a href="{% url 'dimensionamento:relatorio_cenario' pk=cenario.pk %}" class="btn btn-sm btn-outline-info ms-1">Ver Relatório de Dimensionamento</a>
+    </p>
+
+    <div class="summary-metrics">
+        <h4>Resumo da Escala Atual:</h4>
+        <p><strong>Total de Agentes Alocados:</strong> {{ total_agentes_alocados|default:0 }}</p>
+        <p><strong>Total de Horas-Agente Necessárias (Dimensionamento):</strong> {{ total_horas_agente_necessarias|floatformat:2 }} h</p>
+        <p><strong>Total de Horas-Agente Cobertas (Escala):</strong> {{ total_horas_agente_cobertas|floatformat:2 }} h</p>
+        <p><strong>Eficiência da Escala (Necessárias / Cobertas):</strong> {{ eficiencia_escala_percentual|floatformat:1 }}%</p>
+    </div>
+    <hr>
+    <h3>Alocação de Turnos</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <div id="alocacao-turnos-container">
+            {% for form_alocacao in formset %}
+                <div class="formset-alocacao-row">
+                    {{ form_alocacao.id }}
+                    <div class="form-group"> {{ form_alocacao.tipo_turno.label_tag }} {{ form_alocacao.tipo_turno }} {% for error in form_alocacao.tipo_turno.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+                    <div class="form-group"> {{ form_alocacao.hora_inicio_efetiva_turno.label_tag }} {{ form_alocacao.hora_inicio_efetiva_turno }} {% for error in form_alocacao.hora_inicio_efetiva_turno.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+                    <div class="form-group"> {{ form_alocacao.quantidade_agentes.label_tag }} {{ form_alocacao.quantidade_agentes }} {% for error in form_alocacao.quantidade_agentes.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+                    <div class="form-group"> {{ form_alocacao.observacoes.label_tag }} {{ form_alocacao.observacoes }} {% for error in form_alocacao.observacoes.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+                    {% if formset.can_delete %} <div class="form-group delete-form-col"> {{ form_alocacao.DELETE.label_tag }} {{ form_alocacao.DELETE }} </div> {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="add-alocacao-form" class="btn btn-outline-success btn-sm mt-2">Adicionar Linha de Turno (Salvar para Efetivar)</button>
+        <hr>
+        <button type="submit" class="btn btn-primary">Salvar Alocações e Recalcular Cobertura</button>
+    </form>
+
+    <hr style="margin-top: 30px;">
+
+    <h3>Resultado da Cobertura da Escala</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-sm escala-table">
+            <thead class="table-dark">
+                <tr>
+                    <th>Hora</th>
+                    <th>Necessidade (Dimens.)</th>
+                    <th>Cobertura (Escala)</th>
+                    <th>Saldo</th>
+                    <th>SLA com Cobertura (%)</th> {# NOVA COLUNA #}
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in intervalos_display %}
+                    <tr>
+                        <td>{{ item.hora }}</td>
+                        <td>{{ item.necessidade|floatformat:0 }}</td>
+                        <td>{{ item.cobertura|floatformat:0 }}</td>
+                        <td class="{% if item.saldo < 0 %}saldo-negativo{% elif item.saldo > 0 %}saldo-positivo{% endif %}">
+                            {{ item.saldo|floatformat:0 }}
+                        </td>
+                        <td>{{ item.sla_cobertura|floatformat:1|default_if_none:"N/A" }}</td> {# NOVA COLUNA #}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addButton = document.getElementById('add-alocacao-form');
+            if (addButton) {
+                addButton.addEventListener('click', function() {
+                    alert("Para adicionar uma nova linha de turno, preencha a(s) linha(s) existente(s) e clique em 'Salvar Alocações'. Uma nova linha em branco aparecerá se necessário.");
+                });
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Cenário: {{ cenario.nome_cenario }}{% endblock %}
+
+{% block content %}
+    <h2>Editando Cenário: {{ cenario.nome_cenario }} ({{ cenario.data_referencia|date:"d/m/Y" }})</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <h3>Parâmetros Gerais do Cenário</h3>
+        {# ... (Campos nome_cenario, data_referencia) ... #}
+        <div class="form-group">
+            <label for="{{ form_cenario.nome_cenario.id_for_label }}">{{ form_cenario.nome_cenario.label }}</label>
+            {{ form_cenario.nome_cenario }}
+            {% if form_cenario.nome_cenario.help_text %}<small class="form-text text-muted">{{ form_cenario.nome_cenario.help_text }}</small>{% endif %}
+            {% for error in form_cenario.nome_cenario.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form_cenario.data_referencia.id_for_label }}">{{ form_cenario.data_referencia.label }}</label>
+            {{ form_cenario.data_referencia }}
+            {% if form_cenario.data_referencia.help_text %}<small class="form-text text-muted">{{ form_cenario.data_referencia.help_text }}</small>{% endif %}
+            {% for error in form_cenario.data_referencia.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form_cenario.tipo_calculo.id_for_label }}">{{ form_cenario.tipo_calculo.label }}</label>
+            {{ form_cenario.tipo_calculo }}
+            {% for error in form_cenario.tipo_calculo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+
+        {# --- SEÇÃO DE CAMPOS PARA RECEPTIVO VOZ / CHAT (PARTE COMUM) --- #}
+        <div id="campos-receptivo-chat-comum" class="tipo-calculo-fields">
+            {# Estes campos são comuns para Voz Receptivo e Chat Receptivo #}
+            <div class="form-group">
+                <label for="{{ form_cenario.volume_chamadas_diario_base.id_for_label }}">{{ form_cenario.volume_chamadas_diario_base.label }}</label>
+                {{ form_cenario.volume_chamadas_diario_base }}
+                {% for error in form_cenario.volume_chamadas_diario_base.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form_cenario.nivel_servico_meta_percentual.id_for_label }}">{{ form_cenario.nivel_servico_meta_percentual.label }}</label>
+                {{ form_cenario.nivel_servico_meta_percentual }}
+                {% for error in form_cenario.nivel_servico_meta_percentual.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form_cenario.tempo_atendimento_meta_segundos.id_for_label }}">{{ form_cenario.tempo_atendimento_meta_segundos.label }}</label>
+                {{ form_cenario.tempo_atendimento_meta_segundos }}
+                {% for error in form_cenario.tempo_atendimento_meta_segundos.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+        </div>
+
+        {# --- SEÇÃO DE CAMPOS ESPECÍFICOS PARA CHAT RECEPTIVO --- #}
+        <div id="campos-chat-receptivo-especifico" class="tipo-calculo-fields" style="display: none;"> {# Começa oculto #}
+             <h4>Parâmetros Adicionais para Chat Receptivo</h4>
+            <div class="form-group">
+                <label for="{{ form_cenario.concorrencia_chat.id_for_label }}">{{ form_cenario.concorrencia_chat.label }}</label>
+                {{ form_cenario.concorrencia_chat }}
+                {% if form_cenario.concorrencia_chat.help_text %}<small class="form-text text-muted">{{ form_cenario.concorrencia_chat.help_text }}</small>{% endif %}
+                {% for error in form_cenario.concorrencia_chat.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+        </div>
+
+        {# A grade de volumes será mostrada para RECEPTIVO_VOZ e CHAT_RECEPTIVO #}
+        <div id="grade-volumes-receptivo-chat" class="tipo-calculo-fields">
+            <h3>Volumes Estimados por Intervalo (30 min)</h3>
+            <p>Preencha o volume (chamadas/chats) estimado para cada intervalo.</p>
+            {{ formset_intervalos.management_form }}
+            <div class="interval-grid">
+                {% for form_intervalo in formset_intervalos %}
+                    <div class="interval-item">
+                        {{ form_intervalo.id }}
+                        <div style="font-weight: bold; margin-bottom: 5px;">{{ form_intervalo.initial.hora_inicio_display }}</div>
+                        <div class="form-group" style="margin-bottom: 5px;">
+                            {{ form_intervalo.volume_estimado }}
+                            {% for error in form_intervalo.volume_estimado.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+                        {% if form_intervalo.instance and form_intervalo.instance.pk %}
+                            <div class="interval-results">
+                                Ag.Erlang: <strong>{{ form_intervalo.instance.agentes_erlang|floatformat:0|default_if_none:"-" }}</strong><br>
+                                Ag.c/Shrink: <strong>{{ form_intervalo.instance.agentes_com_shrinkage|floatformat:0|default_if_none:"-" }}</strong><br>
+                                NS Proj: <strong>{{ form_intervalo.instance.nivel_servico_projetado_percentual|default_if_none:"N/A"|floatformat:1 }}%</strong><br>
+                                Ocup. Proj: <strong>{{ form_intervalo.instance.ocupacao_projetada_percentual|default_if_none:"N/A"|floatformat:1 }}%</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# --- SEÇÃO DE CAMPOS PARA ATIVO POR META --- #}
+        <div id="campos-ativo-meta" class="tipo-calculo-fields" style="display: none;">
+             <h4>Parâmetros para Ativo por Meta</h4>
+            {# ... (campos do ativo como antes) ... #}
+            <div class="form-group"> <label for="{{ form_cenario.meta_campanha_ativo.id_for_label }}">{{ form_cenario.meta_campanha_ativo.label }}</label> {{ form_cenario.meta_campanha_ativo }} {% for error in form_cenario.meta_campanha_ativo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+            <div class="form-group"> <label for="{{ form_cenario.taxa_contato_percentual_ativo.id_for_label }}">{{ form_cenario.taxa_contato_percentual_ativo.label }}</label> {{ form_cenario.taxa_contato_percentual_ativo }} {% if form_cenario.taxa_contato_percentual_ativo.help_text %}<small class="form-text text-muted">{{ form_cenario.taxa_contato_percentual_ativo.help_text }}</small>{% endif %} {% for error in form_cenario.taxa_contato_percentual_ativo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+            <div class="form-group"> <label for="{{ form_cenario.taxa_sucesso_contato_percentual_ativo.id_for_label }}">{{ form_cenario.taxa_sucesso_contato_percentual_ativo.label }}</label> {{ form_cenario.taxa_sucesso_contato_percentual_ativo }} {% if form_cenario.taxa_sucesso_contato_percentual_ativo.help_text %}<small class="form-text text-muted">{{ form_cenario.taxa_sucesso_contato_percentual_ativo.help_text }}</small>{% endif %} {% for error in form_cenario.taxa_sucesso_contato_percentual_ativo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+            <div class="form-group"> <label for="{{ form_cenario.tempo_medio_discagem_espera_seg_ativo.id_for_label }}">{{ form_cenario.tempo_medio_discagem_espera_seg_ativo.label }}</label> {{ form_cenario.tempo_medio_discagem_espera_seg_ativo }} {% for error in form_cenario.tempo_medio_discagem_espera_seg_ativo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+        </div>
+
+        {# --- SEÇÃO DE CAMPOS COMUNS (TMA, TMP, JORNADA) --- #}
+        <hr style="margin: 30px 0;">
+        <h4>Parâmetros Comuns</h4>
+        {# ... (campos comuns como antes: tma_segundos, tmp_segundos_padrao, jornada_padrao_duracao, tempo_produtivo_estimado_duracao) ... #}
+        <div class="form-group"> <label for="{{ form_cenario.tma_segundos.id_for_label }}">{{ form_cenario.tma_segundos.label }}</label> {{ form_cenario.tma_segundos }} {% for error in form_cenario.tma_segundos.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+        <div class="form-group"> <label for="{{ form_cenario.tmp_segundos_padrao.id_for_label }}">{{ form_cenario.tmp_segundos_padrao.label }}</label> {{ form_cenario.tmp_segundos_padrao }} {% for error in form_cenario.tmp_segundos_padrao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+        <div class="form-group"> <label for="{{ form_cenario.jornada_padrao_duracao.id_for_label }}">{{ form_cenario.jornada_padrao_duracao.label }}</label> {{ form_cenario.jornada_padrao_duracao }} {% if form_cenario.jornada_padrao_duracao.help_text %}<small class="form-text text-muted">{{ form_cenario.jornada_padrao_duracao.help_text }}</small>{% endif %} {% for error in form_cenario.jornada_padrao_duracao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+        <div class="form-group"> <label for="{{ form_cenario.tempo_produtivo_estimado_duracao.id_for_label }}">{{ form_cenario.tempo_produtivo_estimado_duracao.label }}</label> {{ form_cenario.tempo_produtivo_estimado_duracao }} {% if form_cenario.tempo_produtivo_estimado_duracao.help_text %}<small class="form-text text-muted">{{ form_cenario.tempo_produtivo_estimado_duracao.help_text }}</small>{% endif %} {% for error in form_cenario.tempo_produtivo_estimado_duracao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %} </div>
+
+        <hr style="margin: 30px 0;">
+        <h3>Componentes de Shrinkage Aplicados</h3>
+        {# ... (formset_shrinkage como antes) ... #}
+        {{ formset_shrinkage.management_form }} {% for form_shrink in formset_shrinkage %} <div class="formset-row shrinkage-item"> {{ form_shrink.id }} <div class="form-group"> {{ form_shrink.componente.label_tag }} {{ form_shrink.componente }} {% if form_shrink.componente.errors %}<div class="errors">{{ form_shrink.componente.errors }}</div>{% endif %} </div> <div class="form-group"> {{ form_shrink.percentual_aplicado.label_tag }} {{ form_shrink.percentual_aplicado }} % {% if form_shrink.percentual_aplicado.errors %}<div class="errors">{{ form_shrink.percentual_aplicado.errors }}</div>{% endif %} </div> {% if form_shrink.instance.pk and formset_shrinkage.can_delete %} <div class="form-group" style="margin-top: 5px;"> {{ form_shrink.DELETE.label_tag }} {{ form_shrink.DELETE }} </div> {% endif %} </div> {% endfor %} <p><small>Para adicionar um novo componente, preencha um campo vazio. Para remover, marque "Excluir" e salve.</small></p>
+
+        {% if cenario.ftes_calculados_estimativa is not None %}
+            <hr style="margin: 30px 0;">
+            <h3>Estimativa de Contratação (FTEs)</h3>
+            <p>Com base nos cálculos, a estimativa de FTEs necessários é: <strong>{{ cenario.ftes_calculados_estimativa }}</strong></p>
+            <p><small>(Considerando {{ cenario.tempo_produtivo_estimado_duracao }} produtivos por jornada)</small></p>
+        {% endif %}
+
+        <hr style="margin: 30px 0;">
+        <button type="submit" name="salvar" class="btn btn-primary">Salvar Alterações</button>
+            <button type="submit" name="calcular" class="btn btn-success" style="margin-left: 10px;">Salvar e Calcular</button>
+            {% if cenario.pk %}
+            <a href="{% url 'dimensionamento:relatorio_cenario' pk=cenario.pk %}" class="btn btn-info" style="margin-left: 10px;">
+                Ver Relatório Detalhado
+            </a>
+            {# --- NOVO LINK PARA PLANEJAR ESCALAS --- #}
+            <a href="{% url 'escalas:planejar_escalas' cenario_pk=cenario.pk %}" class="btn btn-warning" style="margin-left: 10px;">
+                Planejar Escalas
+            </a>
+            {% endif %}
+            {# --- FIM DO NOVO LINK --- #}
+            <a href="{% url 'dimensionamento:listar_criar_cenarios' %}" style="margin-left: 10px;">
+                <button type="button" class="btn btn-secondary">Cancelar/Voltar para Lista</button>
+        </a>
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formCenarioTipoCalculoId = "{% if form_cenario %}{{ form_cenario.tipo_calculo.id_for_label }}{% endif %}";
+    if (formCenarioTipoCalculoId) {
+        const tipoCalculoSelect = document.getElementById(formCenarioTipoCalculoId);
+
+        // IDs das seções de campos
+        const camposReceptivoChatComum = document.getElementById('campos-receptivo-chat-comum');
+        const camposChatEspecifico = document.getElementById('campos-chat-receptivo-especifico');
+        const gradeVolumesReceptivoChat = document.getElementById('grade-volumes-receptivo-chat');
+        const camposAtivoMeta = document.getElementById('campos-ativo-meta');
+
+        function toggleCampos() {
+            if (!tipoCalculoSelect) return;
+
+            const tipoSelecionado = tipoCalculoSelect.value;
+
+            // Oculta todos os blocos específicos por padrão
+            if(camposReceptivoChatComum) camposReceptivoChatComum.style.display = 'none';
+            if(camposChatEspecifico) camposChatEspecifico.style.display = 'none';
+            if(gradeVolumesReceptivoChat) gradeVolumesReceptivoChat.style.display = 'none';
+            if(camposAtivoMeta) camposAtivoMeta.style.display = 'none';
+
+            if (tipoSelecionado === 'RECEPTIVO_VOZ') {
+                if(camposReceptivoChatComum) camposReceptivoChatComum.style.display = 'block';
+                if(gradeVolumesReceptivoChat) gradeVolumesReceptivoChat.style.display = 'block';
+            } else if (tipoSelecionado === 'ATIVO_META') {
+                if(camposAtivoMeta) camposAtivoMeta.style.display = 'block';
+                // Grade de volumes geralmente não é usada para ATIVO_META no cálculo de FTEs,
+                // mas pode ser mostrada se tiver outro propósito (ex: capacidade de discagem)
+                // if(gradeVolumesReceptivoChat) gradeVolumesReceptivoChat.style.display = 'block';
+            } else if (tipoSelecionado === 'CHAT_RECEPTIVO') {
+                if(camposReceptivoChatComum) camposReceptivoChatComum.style.display = 'block';
+                if(camposChatEspecifico) camposChatEspecifico.style.display = 'block'; // Mostra concorrência
+                if(gradeVolumesReceptivoChat) gradeVolumesReceptivoChat.style.display = 'block'; // Mostra grade de volumes
+            }
+        }
+        if (tipoCalculoSelect) {
+            toggleCampos();
+            tipoCalculoSelect.addEventListener('change', toggleCampos);
+        }
+    }
+});
+</script>
+{% endblock %}

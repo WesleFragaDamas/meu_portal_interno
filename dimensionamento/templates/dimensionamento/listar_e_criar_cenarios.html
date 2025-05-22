@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Cenários de Dimensionamento{% endblock %}
+
+{% block content %}
+    <h2>Criar Novo Cenário de Dimensionamento</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        {# --- RENDERIZAÇÃO CAMPO A CAMPO DO form_cenario --- #}
+        <div class="form-group">
+            <label for="{{ form_cenario.nome_cenario.id_for_label }}">{{ form_cenario.nome_cenario.label }}</label>
+            {{ form_cenario.nome_cenario }}
+            {% if form_cenario.nome_cenario.help_text %}<small class="form-text text-muted">{{ form_cenario.nome_cenario.help_text }}</small>{% endif %}
+            {% for error in form_cenario.nome_cenario.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form_cenario.data_referencia.id_for_label }}">{{ form_cenario.data_referencia.label }}</label>
+            {{ form_cenario.data_referencia }}
+            {% if form_cenario.data_referencia.help_text %}<small class="form-text text-muted">{{ form_cenario.data_referencia.help_text }}</small>{% endif %}
+            {% for error in form_cenario.data_referencia.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form_cenario.tipo_calculo.id_for_label }}">{{ form_cenario.tipo_calculo.label }}</label>
+            {{ form_cenario.tipo_calculo }}
+            {% if form_cenario.tipo_calculo.help_text %}<small class="form-text text-muted">{{ form_cenario.tipo_calculo.help_text }}</small>{% endif %}
+            {% for error in form_cenario.tipo_calculo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div id="campos-receptivo-voz" class="tipo-calculo-fields">
+            <h4>Parâmetros para Voz Receptivo</h4>
+            <div class="form-group">
+                <label for="{{ form_cenario.volume_chamadas_diario_base.id_for_label }}">{{ form_cenario.volume_chamadas_diario_base.label }}</label>
+                {{ form_cenario.volume_chamadas_diario_base }}
+                {% for error in form_cenario.volume_chamadas_diario_base.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form_cenario.nivel_servico_meta_percentual.id_for_label }}">{{ form_cenario.nivel_servico_meta_percentual.label }}</label>
+                {{ form_cenario.nivel_servico_meta_percentual }}
+                {% for error in form_cenario.nivel_servico_meta_percentual.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form_cenario.tempo_atendimento_meta_segundos.id_for_label }}">{{ form_cenario.tempo_atendimento_meta_segundos.label }}</label>
+                {{ form_cenario.tempo_atendimento_meta_segundos }}
+                {% for error in form_cenario.tempo_atendimento_meta_segundos.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            {# A grade de volumes NÃO aparecerá na criação, apenas na edição #}
+        </div>
+
+        <div id="campos-ativo-meta" class="tipo-calculo-fields" style="display: none;">
+            <h4>Parâmetros para Ativo por Meta</h4>
+            <div class="form-group">
+                <label for="{{ form_cenario.meta_campanha_ativo.id_for_label }}">{{ form_cenario.meta_campanha_ativo.label }}</label>
+                {{ form_cenario.meta_campanha_ativo }}
+                {% for error in form_cenario.meta_campanha_ativo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form_cenario.taxa_contato_percentual_ativo.id_for_label }}">{{ form_cenario.taxa_contato_percentual_ativo.label }}</label>
+                {{ form_cenario.taxa_contato_percentual_ativo }}
+                {% if form_cenario.taxa_contato_percentual_ativo.help_text %}<small class="form-text text-muted">{{ form_cenario.taxa_contato_percentual_ativo.help_text }}</small>{% endif %}
+                {% for error in form_cenario.taxa_contato_percentual_ativo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form_cenario.taxa_sucesso_contato_percentual_ativo.id_for_label }}">{{ form_cenario.taxa_sucesso_contato_percentual_ativo.label }}</label>
+                {{ form_cenario.taxa_sucesso_contato_percentual_ativo }}
+                {% if form_cenario.taxa_sucesso_contato_percentual_ativo.help_text %}<small class="form-text text-muted">{{ form_cenario.taxa_sucesso_contato_percentual_ativo.help_text }}</small>{% endif %}
+                {% for error in form_cenario.taxa_sucesso_contato_percentual_ativo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form_cenario.tempo_medio_discagem_espera_seg_ativo.id_for_label }}">{{ form_cenario.tempo_medio_discagem_espera_seg_ativo.label }}</label>
+                {{ form_cenario.tempo_medio_discagem_espera_seg_ativo }}
+                {% for error in form_cenario.tempo_medio_discagem_espera_seg_ativo.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+        </div>
+
+        <hr style="margin: 30px 0;">
+        <h4>Parâmetros Comuns</h4>
+        <div class="form-group">
+            <label for="{{ form_cenario.tma_segundos.id_for_label }}">{{ form_cenario.tma_segundos.label }}</label>
+            {{ form_cenario.tma_segundos }}
+            {% for error in form_cenario.tma_segundos.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form_cenario.tmp_segundos_padrao.id_for_label }}">{{ form_cenario.tmp_segundos_padrao.label }}</label>
+            {{ form_cenario.tmp_segundos_padrao }}
+            {% for error in form_cenario.tmp_segundos_padrao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form_cenario.jornada_padrao_duracao.id_for_label }}">{{ form_cenario.jornada_padrao_duracao.label }}</label>
+            {{ form_cenario.jornada_padrao_duracao }}
+            {% if form_cenario.jornada_padrao_duracao.help_text %}<small class="form-text text-muted">{{ form_cenario.jornada_padrao_duracao.help_text }}</small>{% endif %}
+            {% for error in form_cenario.jornada_padrao_duracao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form_cenario.tempo_produtivo_estimado_duracao.id_for_label }}">{{ form_cenario.tempo_produtivo_estimado_duracao.label }}</label>
+            {{ form_cenario.tempo_produtivo_estimado_duracao }}
+            {% if form_cenario.tempo_produtivo_estimado_duracao.help_text %}<small class="form-text text-muted">{{ form_cenario.tempo_produtivo_estimado_duracao.help_text }}</small>{% endif %}
+            {% for error in form_cenario.tempo_produtivo_estimado_duracao.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        {# --- FIM DA RENDERIZAÇÃO CAMPO A CAMPO --- #}
+
+        <button type="submit" class="btn btn-primary">Criar Cenário e Detalhar</button>
+    </form>
+
+    <hr style="margin: 30px 0;">
+
+    <h2>Cenários Existentes</h2>
+    {% if cenarios %}
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome do Cenário</th>
+                    <th>Tipo</th>
+                    <th>Data de Referência</th>
+                    <th>FTEs Estimados</th>
+                    <th>Atualizado em</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cenario_item in cenarios %} {# Renomeado para evitar conflito com 'cenario' da edição #}
+                    <tr>
+                        <td>{{ cenario_item.nome_cenario }}</td>
+                        <td>{{ cenario_item.get_tipo_calculo_display }}</td> {# Mostra o label amigável #}
+                        <td>{{ cenario_item.data_referencia|date:"d/m/Y" }}</td>
+                        <td>{{ cenario_item.ftes_calculados_estimativa|floatformat:0|default_if_none:"N/C" }}</td>
+                        <td>{{ cenario_item.atualizado_em|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <a href="{% url 'dimensionamento:editar_cenario' pk=cenario_item.pk %}" class="btn btn-sm btn-outline-primary">
+                                Editar/Detalhar
+                            </a>
+                            {% if cenario_item.tipo_calculo == 'RECEPTIVO_VOZ' %} {# Só mostra link de relatório se for receptivo por enquanto #}
+                            <a href="{% url 'dimensionamento:relatorio_cenario' pk=cenario_item.pk %}" class="btn btn-sm btn-outline-info ms-1">
+                                Ver Relatório
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum cenário de dimensionamento cadastrado ainda.</p>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Script para a página de criação/edição de cenário
+    // Pega o ID do form que está sendo renderizado na página atual
+    // (seja form_cenario na criação ou na edição)
+    const formCenarioTipoCalculoId = "{% if form_cenario %}{{ form_cenario.tipo_calculo.id_for_label }}{% endif %}";
+
+    if (formCenarioTipoCalculoId) { // Só executa se o campo tipo_calculo estiver no formulário atual
+        const tipoCalculoSelect = document.getElementById(formCenarioTipoCalculoId);
+        const camposReceptivoVoz = document.getElementById('campos-receptivo-voz');
+        const camposAtivoMeta = document.getElementById('campos-ativo-meta');
+
+        // console.log("Script de toggle de campos INICIADO para form: ", formCenarioTipoCalculoId);
+        // console.log("Elemento tipoCalculoSelect:", tipoCalculoSelect);
+        // console.log("Elemento camposReceptivoVoz:", camposReceptivoVoz);
+        // console.log("Elemento camposAtivoMeta:", camposAtivoMeta);
+
+        function toggleCampos() {
+            if (!tipoCalculoSelect || !camposReceptivoVoz || !camposAtivoMeta) {
+                // console.error("Um ou mais elementos necessários para toggle não foram encontrados.");
+                return;
+            }
+
+            const tipoSelecionado = tipoCalculoSelect.value;
+            // console.log("Tipo Selecionado:", tipoSelecionado);
+
+            camposReceptivoVoz.style.display = 'none';
+            camposAtivoMeta.style.display = 'none';
+
+            if (tipoSelecionado === 'RECEPTIVO_VOZ') {
+                // console.log("Mostrando campos RECEPTIVO_VOZ");
+                camposReceptivoVoz.style.display = 'block';
+            } else if (tipoSelecionado === 'ATIVO_META') {
+                // console.log("Mostrando campos ATIVO_META");
+                camposAtivoMeta.style.display = 'block';
+            }
+        }
+
+        if (tipoCalculoSelect) {
+            toggleCampos();
+            tipoCalculoSelect.addEventListener('change', toggleCampos);
+        }
+    }
+});
+</script>
+{% endblock %}

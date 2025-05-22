@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Portal WFM{% endblock %}
+
+{% block content %}
+    <h2>{{ mensagem_bem_vindo }}</h2>
+    <p>Utilize o menu lateral para navegar pelas funcionalidades.</p>
+
+    <div style="margin-top: 30px;">
+        <h3>Acessos Rápidos:</h3>
+        <ul>
+            <li><a href="{% url 'dimensionamento:listar_criar_cenarios' %}">Gerenciar Cenários de Dimensionamento</a></li>
+            <!-- Adicionar mais links aqui no futuro -->
+        </ul>
+    </div>
+{% endblock %}
