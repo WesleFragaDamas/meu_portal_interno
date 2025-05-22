@@ -5,25 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fb938a92-1bf7-484f-9690-eaa5f617f036" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/meu_portal_interno.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/templates/core/dashboard.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dimensionamento/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dimensionamento/logic.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dimensionamento/templates/dimensionamento/editar_cenario.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dimensionamento/templates/dimensionamento/listar_e_criar_cenarios.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dimensionamento/templates/dimensionamento/relatorio_cenario.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dimensionamento/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/escalas/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/escalas/logic.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/escalas/templates/escalas/planejar_escalas.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/escalas/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/templates/core/Logged_out.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/templates/core/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/base_public.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dimensionamento/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/dimensionamento/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/escalas/templates/escalas/planejar_escalas.html" beforeDir="false" afterPath="$PROJECT_DIR$/escalas/templates/escalas/planejar_escalas.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/escalas/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/escalas/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/meu_portal_interno/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/meu_portal_interno/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,6 +33,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "WesleFragaDamas"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/WesleFragaDamas/meu_portal_interno.git",
+    "accountId": "458b17c8-f72a-4b3a-92a8-2f3271d55414"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
@@ -112,7 +116,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1747356564025</updated>
-      <workItem from="1747356568448" duration="55164000" />
+      <workItem from="1747356568448" duration="63521000" />
     </task>
     <servers />
   </component>

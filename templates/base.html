@@ -37,16 +37,22 @@
     <div class="main-wrapper">
         <aside class="sidebar">
             <h3>Portal WFM</h3>
+            {% if user.is_authenticated %}
+            <div style="padding: 10px 20px; border-bottom: 1px solid #34495e; margin-bottom: 15px;">
+                <small>Usuário:</small><br>
+                <strong>{{ user.username }}</strong>
+            </div>
+            {% endif %}
+
             <nav>
                 <ul>
                     <li class="menu-group">
                         <div class="menu-group-title">Principal</div>
                         <ul>
                             <li>
+                                {# Lógica de 'active' simplificada para o Dashboard #}
                                 <a href="{% url 'core:dashboard' %}"
-                                   {% if request.resolver_match.view_name == 'core:dashboard' %}
-                                   class="active"
-                                   {% endif %}
+                                   {% if request.resolver_match.url_name == 'dashboard' %}class="active"{% endif %}
                                 >Dashboard</a>
                             </li>
                         </ul>
@@ -55,29 +61,35 @@
                         <div class="menu-group-title">Dimensionamento</div>
                         <ul>
                             <li>
-                                {% comment %} --- INÍCIO DA CORREÇÃO (Linha 59 deve ser a tag 'a' ou o primeiro if) --- {% endcomment %}
+                                {% comment %} --- LÓGICA DE 'active' DRASTICAMENTE SIMPLIFICADA PARA TESTE --- {% endcomment %}
+                                {% with current_app=request.resolver_match.app_name %}
                                 <a href="{% url 'dimensionamento:listar_criar_cenarios' %}"
-                                    {% if request.resolver_match.app_name == 'dimensionamento' %}
-                                        {% if request.resolver_match.url_name == 'listar_criar_cenarios' or request.resolver_match.url_name == 'editar_cenario' or request.resolver_match.url_name == 'relatorio_cenario' %}
-                                            class="active"
-                                        {% endif %}
-                                    {% elif request.resolver_match.app_name == 'escalas' and request.resolver_match.url_name == 'planejar_escalas' %}
-                                        {% if request.resolver_match.kwargs.cenario_pk %} {# Para garantir que é a view específica #}
-                                            class="active"
-                                        {% endif %}
-                                    {% endif %}
+                                   {% if current_app == 'dimensionamento' or current_app == 'escalas' %}
+                                   class="active"
+                                   {% endif %}
                                 >Gerenciar Cenários & Escalas</a>
-                                {% comment %} --- FIM DA CORREÇÃO --- {% endcomment %}
+                                {% endwith %}
                             </li>
                         </ul>
                     </li>
                     <li class="menu-group">
                         <div class="menu-group-title">Administração</div>
                         <ul>
-                            <li><a href="{% url 'admin:index' %}" target="_blank">Admin Django</a></li>
+                            {% if user.is_authenticated %}
+                                {% if user.is_superuser %}
+                                <li><a href="{% url 'admin:index' %}" target="_blank">Admin Django</a></li>
+                                {% endif %}
+                                <li>
+                                    <form id="logout-form" method="post" action="{% url 'core:logout' %}" style="display: none;">
+                                        {% csrf_token %}
+                                    </form>
+                                    <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Sair (Logout)</a>
+                                </li>
+                            {% else %}
+                                <li><a href="{% url 'core:login' %}">Entrar (Login)</a></li>
+                            {% endif %}
                         </ul>
                     </li>
-                    {# O grupo Escalas separado foi removido, pois "Planejar Escalas" agora está logicamente sob Dimensionamento #}
                 </ul>
             </nav>
         </aside>

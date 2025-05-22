@@ -1,0 +1,31 @@
+{% extends "base_public.html" %} {# Usaremos um base diferente #}
+{% load static %}
+
+{% block title %}Logout - Portal WFM{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Logout Realizado</h2>
+                    <p>Você saiu da sua conta com sucesso.</p>
+                    <p><a href="{% url 'core:login' %}" class="btn btn-primary">Fazer Login Novamente</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    html, body { height: 100%; }
+    body { display: flex; align-items: center; justify-content: center; }
+    .main-wrapper { display: block !important; }
+    .sidebar { display: none !important; }
+    .content-area { padding: 0 !important; }
+    footer { display: none !important; }
+</style>
+{% endblock %}
